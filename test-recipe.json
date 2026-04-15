@@ -1,0 +1,54 @@
+{
+  "name": "Spicy Chicken Stir-fry",
+  "description": "A quick and flavorful stir-fry with a spicy kick.",
+  "ingredients": [
+    {
+      "name": "Chicken Breast",
+      "quantity": 400,
+      "unit": "g"
+    },
+    {
+      "name": "Broccoli Florets",
+      "quantity": 200,
+      "unit": "g"
+    },
+    {
+      "name": "Bell Pepper (red)",
+      "quantity": 1,
+      "unit": "piece"
+    },
+    {
+      "name": "Soy Sauce",
+      "quantity": 4,
+      "unit": "tbsp"
+    },
+    {
+      "name": "Sriracha",
+      "quantity": 2,
+      "unit": "tbsp"
+    },
+    {
+      "name": "Ginger (grated)",
+      "quantity": 1,
+      "unit": "tsp"
+    },
+    {
+      "name": "Garlic (minced)",
+      "quantity": 2,
+      "unit": "cloves"
+    }
+  ],
+  "instructions": [
+    "Cut chicken breast into bite-sized pieces.",
+    "Heat oil in a large skillet or wok over medium-high heat.",
+    "Add chicken and cook until browned and cooked through. Remove from pan.",
+    "Add broccoli and bell pepper to the pan and stir-fry for 3-5 minutes until tender-crisp.",
+    "In a small bowl, whisk together soy sauce, sriracha, grated ginger, and minced garlic.",
+    "Return chicken to the pan. Pour sauce over chicken and vegetables, tossing to coat.",
+    "Cook for another 1-2 minutes until sauce has thickened slightly.",
+    "Serve immediately with rice or noodles."
+  ],
+  "prepTime": 15,
+  "cookTime": 20,
+  "servings": 2
+}

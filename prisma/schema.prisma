@@ -1,0 +1,131 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider        = "prisma-client"
+  output          = "../src/generated/prisma"
+  moduleFormat    = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum JobStatus {
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+model User {
+  id               String      @id @default(uuid())
+  email            String      @unique
+  hashedPassword   String
+  emailVerified    Boolean     @default(false)
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+
+  verificationTokens VerificationToken[]
+  passwordResetTokens PasswordResetToken[]
+  refreshTokens      RefreshToken[]
+}
+
+model VerificationToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([token])
+}
+
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([token])
+}
+
+model RefreshToken {
+  id          String   @id @default(uuid())
+  lookupHash  String   @unique  // SHA-256 for database lookup
+  bcryptHash  String             // bcrypt for verification
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+
+  @@index([lookupHash])
+  @@index([userId])
+}
+
+model Recipe {
+  id          String         @id @default(uuid())
+  name        String
+  description String?
+  status      JobStatus    @default(PROCESSING)
+
+  prepTime    Int?
+  cookTime    Int?
+  servings    Int?
+
+  ingredients RecipeIngredient[]
+  instructions Instruction[]
+
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+}
+
+model Ingredient {
+  id          String   @id @default(uuid())
+  name        String
+  normalized  String   @unique
+
+  recipeIngredients RecipeIngredient[]
+  nutrition Nutrition?
+}
+
+model RecipeIngredient {
+  id         String           @id @default(uuid())
+  recipe     Recipe           @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  recipeId   String
+
+  product    Ingredient @relation(fields: [productId], references: [id])
+  productId  String
+
+  quantity   Float?
+  unit       String?
+}
+
+model Instruction {
+  id        String  @id @default(uuid())
+  recipe    Recipe  @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  recipeId  String
+
+  step      Int
+  content   String
+}
+
+model Nutrition {
+  id        String           @id @default(uuid())
+  ingredient Ingredient @relation(fields: [ingredientId], references: [id])
+  ingredientId      String  @unique
+
+  caloriesPer100     Float
+  caloriesUnit   String
+  protein        Float?
+  carbs          Float?
+  fat            Float?
+  fiber          Float?
+
+  updatedAt DateTime @updatedAt
+}

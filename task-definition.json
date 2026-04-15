@@ -1,0 +1,57 @@
+{
+  "family": "nutri-scale-api-task-01042026",
+  "executionRoleArn": "arn:aws:iam::379055359520:role/ecsTaskExecutionRole",
+  "networkMode": "awsvpc",
+  "containerDefinitions": [
+    {
+      "name": "nutri-scale-api-container-01042026",
+      "image": "379055359520.dkr.ecr.us-east-1.amazonaws.com/nutri-scale-api-01042026:latest",
+      "cpu": 0,
+      "portMappings": [
+        {
+          "name": "nutri-scale-api-container-01042026-8000-tcp",
+          "containerPort": 8000,
+          "hostPort": 8000,
+          "protocol": "tcp",
+          "appProtocol": "http"
+        }
+      ],
+      "essential": true,
+      "secrets": [
+        {
+          "name": "GROQ_API_KEY",
+          "valueFrom": "arn:aws:ssm:us-east-1:379055359520:parameter/nutri-scale-api-01042026/GROQ_API_KEY"
+        },
+        {
+          "name": "DATABASE_URL",
+          "valueFrom": "arn:aws:ssm:us-east-1:379055359520:parameter/nutri-scale-api-01042026/DATABASE_URL"
+        },
+        {
+          "name": "JWT_SECRET",
+          "valueFrom": "arn:aws:ssm:us-east-1:379055359520:parameter/nutri-scale-api-01042026/JWT_SECRET"
+        }
+      ],
+      "environment": [
+        { "name": "NODE_ENV", "value": "production" },
+        { "name": "PORT", "value": "8000" },
+        { "name": "JWT_EXPIRES_IN", "value": "15m" }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/nutri-scale-api-task-01042026",
+          "awslogs-create-group": "true",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      }
+    }
+  ],
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "1024",
+  "memory": "2048",
+  "runtimePlatform": {
+    "cpuArchitecture": "X86_64",
+    "operatingSystemFamily": "LINUX"
+  }
+}
