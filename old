@@ -1,0 +1,49 @@
+######### STAGE 1: Builder #############
+FROM node:22-alpine AS builder
+
+WORKDIR /app
+
+# Instalujemy narzędzia systemowe dla Prismy
+RUN apk add --no-cache libc6-compat openssl
+
+# Instalujemy pnpm
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+# Kopiujemy pliki zależności
+COPY package.json pnpm-lock.yaml ./
+COPY prisma ./prisma/
+
+# 1. Instalujemy WSZYSTKIE zależności (razem z devDependencies)
+RUN pnpm install --frozen-lockfile
+
+# 2. Generujemy klienta Prismy (Kluczowy krok!)
+RUN pnpm prisma generate
+
+# 3. Kopiujemy resztę kodu i budujemy NestJS
+COPY . .
+RUN pnpm build
+
+# 4. Usuwamy devDependencies, zostawiając tylko produkcyjne paczki i Prismę
+RUN pnpm install --prod --frozen-lockfile
+
+######### STAGE 2: Runner #############
+FROM node:22-alpine AS runner
+
+WORKDIR /app
+
+# Ponownie instalujemy openssl dla runtime'u
+RUN apk add --no-cache openssl
+
+# Kopiujemy tylko to, co niezbędne
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/prisma ./prisma
+
+# Instalujemy pnpm w runnerze (do obsługi komend w CMD)
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+EXPOSE 8000
+
+# Używamy pnpm exec, by mieć pewność, że Prisma ruszy z node_modules
+CMD ["sh", "-c", "./node_modules/.bin/prisma migrate deploy && node dist/main.js"]

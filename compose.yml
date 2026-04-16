@@ -1,0 +1,12 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nutri_scale_app
+    ports:
+      - '8000:8000'
+    env_file:
+      - .env
+    command: >
+      sh -c "pnpm prisma migrate deploy && node dist/src/main"
