@@ -53,7 +53,7 @@ export class EmailService {
   }
 
   async sendPasswordResetEmail(email: string, token: string): Promise<void> {
-    const resetUrl = `${this.configService.get('FRONTEND_URL') || 'http://localhost:3000'}/reset-password?token=${token}`;
+    const resetUrl = `${this.configService.get('CORS_ORIGIN') || 'http://localhost:3000'}/reset-password?token=${token}`;
     const from =
       this.configService.get<string>('MAIL_FROM') ||
       'Nutri Scale <system@nutri-scale.wownek.pl>';
