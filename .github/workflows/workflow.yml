@@ -49,6 +49,7 @@ jobs:
         with:
           context: .
           push: true
+          no-cache: true
           tags: wownek/nutri-scale-be:latest
 
   deploy:
@@ -66,6 +67,7 @@ jobs:
             docker pull wownek/nutri-scale-be:latest
             docker stop nutri-app || true
             docker rm nutri-app || true
+            docker image prune -f 
             docker run -d \
               --name nutri-app \
               -p 8000:8000 \
