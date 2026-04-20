@@ -23,7 +23,6 @@ import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class AuthService {
   private isProd = false;
-  private localhostOrigin = 'http://localhost:3000';
 
   constructor(
     private readonly prisma: PrismaService,
@@ -67,9 +66,6 @@ export class AuthService {
   async signin(signInDto: SignInDto, res: Response) {
     const { email, password } = signInDto;
 
-    const origin = res.req.headers.origin;
-    const isLocal = this.localhostOrigin === origin;
-
     const existingUser = await this.prisma.user.findUnique({
       where: { email },
     });
@@ -105,15 +101,17 @@ export class AuthService {
 
     res.cookie('access_token', accessToken, {
       httpOnly: true,
-      secure: this.isProd && !isLocal,
-      sameSite: this.isProd && !isLocal ? 'none' : 'lax',
+      secure: this.isProd,
+      sameSite: this.isProd ? 'none' : 'lax',
+      domain: this.isProd ? '.wownek.pl' : 'localhost',
       maxAge: 15 * 60 * 1000, // 15 minutes
     });
 
     res.cookie('refresh_token', refreshToken, {
       httpOnly: true,
-      secure: this.isProd && !isLocal,
-      sameSite: this.isProd && !isLocal ? 'none' : 'lax',
+      secure: this.isProd,
+      sameSite: this.isProd ? 'none' : 'lax',
+      domain: this.isProd ? '.wownek.pl' : 'localhost',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
@@ -137,9 +135,6 @@ export class AuthService {
 
   async refreshTokens(refreshToken: string, res: Response) {
     const lookupHash = this.generateLookupHash(refreshToken);
-
-    const origin = res.req.headers.origin;
-    const isLocal = this.localhostOrigin === origin;
 
     const tokenRecord = await this.prisma.refreshToken.findUnique({
       where: { lookupHash },
@@ -177,15 +172,17 @@ export class AuthService {
 
     res.cookie('access_token', newAccessToken, {
       httpOnly: true,
-      secure: this.isProd && !isLocal,
-      sameSite: this.isProd && !isLocal ? 'none' : 'lax',
+      secure: this.isProd,
+      sameSite: this.isProd ? 'none' : 'lax',
+      domain: this.isProd ? '.wownek.pl' : 'localhost',
       maxAge: 15 * 60 * 1000,
     });
 
     res.cookie('refresh_token', newRefreshToken, {
       httpOnly: true,
-      secure: this.isProd && !isLocal,
-      sameSite: this.isProd && !isLocal ? 'none' : 'lax',
+      secure: this.isProd,
+      sameSite: this.isProd ? 'none' : 'lax',
+      domain: this.isProd ? '.wownek.pl' : 'localhost',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
