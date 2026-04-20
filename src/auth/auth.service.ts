@@ -23,6 +23,7 @@ import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class AuthService {
   private isProd = false;
+  private cookieOptions = {};
 
   constructor(
     private readonly prisma: PrismaService,
@@ -32,6 +33,12 @@ export class AuthService {
   ) {
     this.isProd =
       this.configService.getOrThrow<string>('NODE_ENV') === 'production';
+    this.cookieOptions = {
+      httpOnly: true,
+      secure: this.isProd,
+      sameSite: this.isProd ? 'none' : 'lax',
+      domain: this.isProd ? '.wownek.pl' : 'localhost',
+    };
   }
 
   async signup(signUpDto: SignUpDto) {
@@ -100,18 +107,12 @@ export class AuthService {
     }
 
     res.cookie('access_token', accessToken, {
-      httpOnly: true,
-      secure: this.isProd,
-      sameSite: this.isProd ? 'none' : 'lax',
-      domain: this.isProd ? '.wownek.pl' : 'localhost',
+      ...this.cookieOptions,
       maxAge: 15 * 60 * 1000, // 15 minutes
     });
 
     res.cookie('refresh_token', refreshToken, {
-      httpOnly: true,
-      secure: this.isProd,
-      sameSite: this.isProd ? 'none' : 'lax',
-      domain: this.isProd ? '.wownek.pl' : 'localhost',
+      ...this.cookieOptions,
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
@@ -121,8 +122,8 @@ export class AuthService {
   }
 
   signout(res: Response, refreshToken?: string) {
-    res.clearCookie('access_token');
-    res.clearCookie('refresh_token');
+    res.clearCookie('access_token', this.cookieOptions);
+    res.clearCookie('refresh_token', this.cookieOptions);
 
     if (refreshToken) {
       this.revokeRefreshToken(refreshToken);
@@ -171,18 +172,12 @@ export class AuthService {
     const newRefreshToken = await this.createRefreshToken(tokenRecord.user.id);
 
     res.cookie('access_token', newAccessToken, {
-      httpOnly: true,
-      secure: this.isProd,
-      sameSite: this.isProd ? 'none' : 'lax',
-      domain: this.isProd ? '.wownek.pl' : 'localhost',
+      ...this.cookieOptions,
       maxAge: 15 * 60 * 1000,
     });
 
     res.cookie('refresh_token', newRefreshToken, {
-      httpOnly: true,
-      secure: this.isProd,
-      sameSite: this.isProd ? 'none' : 'lax',
-      domain: this.isProd ? '.wownek.pl' : 'localhost',
+      ...this.cookieOptions,
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
