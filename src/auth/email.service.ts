@@ -20,7 +20,7 @@ export class EmailService {
   }
 
   async sendVerificationEmail(email: string, token: string): Promise<void> {
-    const verificationUrl = `${this.configService.get('FRONTEND_URL') || 'http://localhost:3000'}/verify-email?token=${token}`;
+    const verificationUrl = `${this.configService.get('CORS_ORIGIN') || 'http://localhost:3000'}/verify-email?token=${token}`;
     const from =
       this.configService.get<string>('MAIL_FROM') ||
       'Nutri Scale <system@nutri-scale.wownek.pl>';
@@ -39,7 +39,7 @@ export class EmailService {
       html: `
         <h1>Email Verification</h1>
         <p>Thank you for signing up! Please verify your email address by clicking the link below:</p>
-        <a href="${verificationUrl}" style="padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px;">Verify Email</a>
+        <a href="${verificationUrl}">${verificationUrl}</a>
         <p>This link will expire in 24 hours.</p>
       `,
     });
@@ -72,7 +72,7 @@ export class EmailService {
       html: `
         <h1>Password Reset</h1>
         <p>You requested a password reset. Click the link below to reset your password:</p>
-        <a href="${resetUrl}" style="padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px;">Reset Password</a>
+        <a href="${resetUrl}">${resetUrl}</a>
         <p>If you didn't request this, please ignore this email.</p>
       `,
     });
