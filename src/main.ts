@@ -25,15 +25,11 @@ async function bootstrap() {
     ? corsOriginEnv.split(',').map((o) => o.trim().replace(/['"]/g, ''))
     : ['http://localhost:3000'];
 
-  console.log('REGISTERED ORIGIN  CORS:', allowedOrigins);
-
   app.enableCors({
     origin: (origin, callback) => {
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
-        console.log('THIS IS ORIGIN:', origin);
       } else {
-        console.error(`Blokada CORS dla: ${origin}`);
         callback(new Error('CORS: Origin not allowed'));
       }
     },
