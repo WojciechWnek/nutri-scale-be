@@ -82,6 +82,11 @@ describe('AuthService', () => {
 
   beforeEach(async () => {
     mockResponse = {
+      req: {
+        headers: {
+          origin: 'http://localhost:3000',
+        },
+      },
       cookie: jest.fn(),
       clearCookie: jest.fn(),
     };
