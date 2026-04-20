@@ -22,7 +22,7 @@ async function bootstrap() {
 
   const corsOriginEnv = process.env.CORS_ORIGIN;
   const allowedOrigins = corsOriginEnv
-    ? corsOriginEnv.split(',').map((o) => o.trim())
+    ? corsOriginEnv.split(',').map((o) => o.trim().replace(/['"]/g, ''))
     : ['http://localhost:3000'];
 
   app.enableCors({
@@ -30,12 +30,12 @@ async function bootstrap() {
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
-        callback(new Error('Not allowed by CORS'));
+        callback(new Error('CORS: Origin not allowed'));
       }
     },
     credentials: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    allowedHeaders: 'Content-Type, Accept, Authorization',
+    allowedHeaders: 'Content-Type,Accept,Authorization',
   });
 
   await app.listen(process.env.PORT ?? 8000);
