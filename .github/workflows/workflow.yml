@@ -50,7 +50,8 @@ jobs:
           context: .
           push: true
           no-cache: true
-          tags: wownek/nutri-scale-be:${{ github.sha }}
+          pull: true
+          tags: wownek/nutri-scale-be:latest
 
   deploy:
     needs: docker-push
@@ -63,13 +64,14 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-            docker pull wownek/nutri-scale-be:${{ github.sha }}
             docker stop nutri-app || true
             docker rm nutri-app || true
-            docker image prune -f 
+            docker rmi wownek/nutri-scale-be:latest || true
+            docker image prune -af 
+            docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+            docker pull wownek/nutri-scale-be:latest
             docker run -d \
               --name nutri-app \
               -p 8000:8000 \
               --env-file .env \
-              wownek/nutri-scale-be:${{ github.sha }}
+              wownek/nutri-scale-be:latest
