@@ -21,13 +21,21 @@ async function bootstrap() {
   app.use(cookieParser());
 
   const corsOriginEnv = process.env.CORS_ORIGIN;
-  const corsOrigins = corsOriginEnv
-    ? corsOriginEnv.split(',').map((origin) => origin.trim())
+  const allowedOrigins = corsOriginEnv
+    ? corsOriginEnv.split(',').map((o) => o.trim())
     : ['http://localhost:3000'];
 
   app.enableCors({
-    origin: corsOrigins,
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    allowedHeaders: 'Content-Type, Accept, Authorization',
   });
 
   await app.listen(process.env.PORT ?? 8000);
