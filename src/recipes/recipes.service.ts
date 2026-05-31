@@ -180,9 +180,13 @@ export class RecipesService {
           },
         });
       }
-
+      const instructions = Array.isArray(parsedData.instructions)
+        ? parsedData.instructions
+        : parsedData.instructions
+          ? [parsedData.instructions]
+          : [];
       // Create instructions
-      for (const instruction of parsedData.instructions) {
+      for (const instruction of instructions) {
         await tx.instruction.create({
           data: {
             recipeId: recipe.id,
@@ -350,9 +354,13 @@ export class RecipesService {
           },
         });
       }
-
+      const instructions = Array.isArray(parsedData.instructions)
+        ? parsedData.instructions
+        : parsedData.instructions
+          ? [parsedData.instructions]
+          : [];
       // Create instructions
-      for (const instruction of parsedData.instructions) {
+      for (const instruction of instructions) {
         await tx.instruction.create({
           data: {
             recipeId: id,
