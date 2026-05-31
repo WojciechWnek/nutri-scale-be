@@ -105,7 +105,6 @@ export class UploadService {
 
       this.sseService.sendEvent(batchJobId, 'parsingStatus', {
         status: 'finished',
-        recipes: createdRecipes,
         recipeIds: recipeIds,
       });
 
