@@ -23,7 +23,7 @@ export class EmailService {
     const verificationUrl = `${this.configService.get('CORS_ORIGIN') || 'http://localhost:3000'}/verify-email?token=${token}`;
     const from =
       this.configService.get<string>('MAIL_FROM') ||
-      'Nutri Scale <system@nutri-scale.wownek.pl>';
+      'Nutri Scale <system@nutriscale.wownek.pl>';
 
     if (!this.resend) {
       this.logger.log(
@@ -56,7 +56,7 @@ export class EmailService {
     const resetUrl = `${this.configService.get('CORS_ORIGIN') || 'http://localhost:3000'}/reset-password?token=${token}`;
     const from =
       this.configService.get<string>('MAIL_FROM') ||
-      'Nutri Scale <system@nutri-scale.wownek.pl>';
+      'Nutri Scale <system@nutriscale.wownek.pl>';
 
     if (!this.resend) {
       this.logger.log(
